@@ -5,20 +5,18 @@ namespace :scrape do
   desc "Scrape events"
   task get_events: :environment do
 
-    # 'div .ListingOuter' is div with all info
-      # page.css('.searchResultsPrice').text  # warnign, only gives me 9 results although 10 on the page
-      # inside of each,     # .ListingAct blockquote h3 a links to the specific page
-
     # begin 
     # Result is an array of hashes, each hash having all info for an event
     result = []
 
-    # 1) Prepare to iterate through ALL the pages
+    # Prepare to iterate through ALL the pages
     first_page = Nokogiri::HTML(open("http://www.wegottickets.com/searchresults/page/1/all"))
     last_page_num = first_page.css('a.pagination_link').last.children.first.text.to_i
     puts "last page is #{last_page_num}"
 
     # (1..last_page_num).each do |page_num|
+    # out of time consideration i limit it to 3 pages but when I ran it on the whole thing it kept going without erros. 
+    # I killed the loop after 5 minutes but still no error
     (1..3).each do |page_num|
 
       puts "page number #{page_num}"
