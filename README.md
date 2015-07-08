@@ -1,0 +1,9 @@
+Real-life coding test - Scrape data from http://www.wegottickets.com/
+Part of GA web dev immersive class, week1 day3
+
+Able to iterate through all the pages and scrape info for all events on the page:
+date, venue, town, artist, price
+
+Nailed it in 1.45mins!
+
+Should be able to refine the artist thing with more 
