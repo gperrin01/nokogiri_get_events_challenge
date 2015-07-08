@@ -1,5 +1,5 @@
 require 'open-uri'
-
+require 'json'
 
 namespace :scrape do
   desc "Scrape events"
@@ -11,7 +11,7 @@ namespace :scrape do
 
     # begin 
     # Result is an array of hashes, each hash having all info for an event
-    # result = []
+    result = []
 
     # 1) Prepare to iterate through ALL the pages
     first_page = Nokogiri::HTML(open("http://www.wegottickets.com/searchresults/page/1/all"))
@@ -19,10 +19,13 @@ namespace :scrape do
     puts "last page is #{last_page_num}"
 
     # (1..last_page_num).each do |page_num|
+    (1..3).each do |page_num|
 
-      # page = Nokogiri::HTML(open("http://www.wegottickets.com/searchresults/page/#{page_num}/all"))
-      result = []
-      page = Nokogiri::HTML(open("http://www.wegottickets.com/searchresults/page/1/all"))
+      puts "page number #{page_num}"
+
+      page = Nokogiri::HTML(open("http://www.wegottickets.com/searchresults/page/#{page_num}/all"))
+      # result = []
+      # page = Nokogiri::HTML(open("http://www.wegottickets.com/searchresults/page/1/all"))
 
       # On each page, all results are shown inside this 'div .ListingOuter'
       page.css('div.ListingOuter').each do |listing|
@@ -44,8 +47,13 @@ namespace :scrape do
        date_holder.css('.venuename').remove 
        date_holder.css('i').remove
        # date_holder.text now is e.g. "Wed 8th Jul, 2015, 8.00pm"
-       listing_info[:listing_date] = date_holder.text.split(', ')[0] + ' ' + date_holder.text.split(', ')[1]
-       listing_info[:listing_time] = date_holder.text.split(', ').last
+       if date_holder.text.split(', ')[1]
+         listing_info[:listing_date] = date_holder.text.split(', ')[0] + ' ' + date_holder.text.split(', ')[1]
+         listing_info[:listing_time] = date_holder.text.split(', ').last
+       else
+          listing_info[:listing_date] = date_holder.text.split(', ')[0]
+          listing_info[:listing_time] = date_holder.text.split(', ').last
+       end
 
        # REFINE ON THE ARTISTS eg remove the with if any, split by > if any
        listing_info[:listing_artists] = listing.css('.ListingAct blockquote p i').text  
@@ -56,8 +64,9 @@ namespace :scrape do
       end # end of iteration through the individual listings
 
 
-    # end # end of iteration through pages
+    end # end of iteration through pages
 
+    # result = result.to_json
     puts "RESULT IS #{result}"
 
     # rescue Exception => e
